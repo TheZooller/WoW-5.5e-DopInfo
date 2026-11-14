@@ -1296,7 +1296,25 @@ html, body {
   border-bottom: 1px solid var(--border);
   gap: 12px;
 }
-.pal-in svg { width: 20px; height: 20px; stroke: var(--text-muted); }
+.pal-in svg { width: 20px; height: 20px; stroke: var(--text-muted); flex-shrink: 0; }
+.pal-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.pal-close-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-color-title);
+}
 .pal-in input {
   flex: 1;
   background: transparent;
@@ -1467,7 +1485,11 @@ html, body {
 <!-- SEARCH PALETTE (Ctrl+K) -->
 <div class="pal-backdrop" id="pal" hidden>
   <div class="pal-box">
-    <div class="pal-in" id="palIn"></div>
+    <div class="pal-in" id="palIn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="pq" type="search" placeholder="Поиск по справочнику..." autocomplete="off">
+      <button type="button" class="pal-close-btn" id="palCloseBtn" aria-label="Закрыть">&times;</button>
+    </div>
     <div class="pal-res" id="pr"></div>
   </div>
 </div>
@@ -1773,7 +1795,7 @@ function updateUIStrings() {
 
   var fn = $("footer-note"); if (fn) fn.textContent = t("disclaimer");
 
-  $("palIn").innerHTML = ico("search") + '<input id="pq" type="search" placeholder="' + escA(t("search_ph")) + '" autocomplete="off">';
+  var pqEl = $("pq"); if (pqEl) pqEl.placeholder = t("search_ph");
 }
 
 function tab(name, user) {
@@ -2478,66 +2500,245 @@ function buildHome() {
 }
 
 var PI = [];
+
+function switchLayout(str) {
+  var ru = "йцукенгшщзхъфывапролджэячсмитьбюё";
+  var en = "qwertyuiop[]asdfghjkl;'zxcvbnm,.`";
+  var r2e = "", e2r = "";
+  for (var i = 0; i < str.length; i++) {
+    var ch = str[i].toLowerCase();
+    var idxR = ru.indexOf(ch);
+    var idxE = en.indexOf(ch);
+    r2e += (idxR >= 0 ? en[idxR] : ch);
+    e2r += (idxE >= 0 ? ru[idxE] : ch);
+  }
+  return [r2e, e2r];
+}
+
+function stemRu(word) {
+  if (!word || word.length <= 4) return word;
+  return word.replace(/(ости|ость|ями|ами|ого|его|ому|ему|ыми|ими|ых|их|ую|юю|ая|яя|ое|ее|ые|ие|ов|ев|ей|ам|ям|ом|ем|ах|ях|ть|ти|ул|ла|ли|ло|ся|сь|ы|и|а|я|у|ю|е|о)$/i, "");
+}
+
 function buildIndex() {
   PI = [];
+
+  // 1. Classes, Specs & Subclass Features
   CLASSES.forEach(function(k) {
     var d = k[currentLang] || k['ru'];
-    PI.push({ t: d.name, sub: t("classes") + " · " + (currentLang !== 'en' ? k.en.name : d.base), tab: "classes", id: k.id, tag: t("classes"), col: k.color });
-    d.specs.forEach(function(sp) {
-      PI.push({ t: d.name + ": " + sp[0], sub: sp[1], tab: "classes", id: k.id, tag: "Спек", col: k.color });
+    var clsTag = t("classes") || "Класс";
+    PI.push({
+      t: d.name,
+      sub: clsTag + " · " + (currentLang !== 'en' ? k.en.name : d.base),
+      d: (d.desc || "") + " " + (d.subname || "") + " " + (d.hp || "") + " " + (d.armor || ""),
+      tab: "classes",
+      id: k.id,
+      tag: clsTag,
+      col: k.color
+    });
+    (d.specs || []).forEach(function(sp) {
+      PI.push({
+        t: d.name + ": " + sp[0],
+        sub: sp[1],
+        d: sp[1],
+        tab: "classes",
+        id: k.id,
+        tag: t("specializations") || "Спек",
+        col: k.color
+      });
+    });
+    var feList = (FE[currentLang] || FE['ru'])[k.id] || [];
+    feList.forEach(function(feItem) {
+      PI.push({
+        t: feItem[1],
+        sub: d.name + " (" + feItem[0] + " " + t("lvl_suffix") + ")",
+        d: (feItem[2] || "").replace(/<[^>]+>/g, " "),
+        tab: "classes",
+        id: k.id,
+        tag: t("subclass_features") || "Умение",
+        col: k.color
+      });
     });
   });
+
+  // 2. Spells
   SPELLS.forEach(function(sp) {
     var d = sp[currentLang] || sp['ru'];
-    PI.push({ t: d.name, sub: t("spells") + " · " + (currentLang !== 'en' ? sp.en.name : sp.cls), tab: "spells", id: sp.en.name, tag: t("spells"), col: "#a5f1ff" });
+    var lvlStr = sp.lvl === 0 ? (t("cantrips") || "Заговор") : (sp.lvl + " " + t("lvl_suffix"));
+    PI.push({
+      t: d.name,
+      sub: t("spells") + " · " + (currentLang !== 'en' ? sp.en.name + " · " : "") + lvlStr,
+      d: (d.desc || "").replace(/<[^>]+>/g, " ") + " " + (sp.school || "") + " " + (sp.time || "") + " " + (sp.range || ""),
+      tab: "spells",
+      id: sp.en.name,
+      tag: t("spells") || "Заклинание",
+      col: "#a5f1ff"
+    });
   });
+
+  // 3. Races / Origins
   RD.forEach(function(r) {
     var d = r[currentLang] || r['ru'];
-    PI.push({ t: d.name, sub: t("races") + (d.sub && currentLang !== 'en' ? " · " + d.sub : ""), tab: "races", id: r.id, tag: t("races"), col: r.color || "#aad372" });
+    var traitsText = (d.traits || []).map(function(tr){ return tr.name + " " + tr.desc; }).join(" ");
+    PI.push({
+      t: d.name,
+      sub: t("races") + (d.sub && currentLang !== 'en' ? " · " + d.sub : ""),
+      d: (d.desc || "") + " " + traitsText.replace(/<[^>]+>/g, " "),
+      tab: "races",
+      id: r.id,
+      tag: t("races") || "Народ",
+      col: r.color || "#aad372"
+    });
   });
+
+  // 4. Factions
+  var allFactions = [];
+  (FACTIONS.alliance || []).forEach(function(f) { allFactions.push(Object.assign({ side: 'alliance' }, f)); });
+  (FACTIONS.horde || []).forEach(function(f) { allFactions.push(Object.assign({ side: 'horde' }, f)); });
+  (FACTIONS.independent || []).forEach(function(f) { allFactions.push(Object.assign({ side: 'neutral' }, f)); });
+  allFactions.forEach(function(f) {
+    var d = f[currentLang] || f['ru'];
+    var col = f.side === 'alliance' ? "#0078d4" : (f.side === 'horde' ? "#d13438" : "#d4af37");
+    var sideName = f.side === 'alliance' ? t("alliance") : (f.side === 'horde' ? t("horde") : t("independent"));
+    PI.push({
+      t: d.name,
+      sub: t("fact") + " · " + sideName,
+      d: (d.desc || "").replace(/<[^>]+>/g, " "),
+      tab: "fact",
+      id: f.id,
+      tag: t("fact") || "Фракция",
+      col: col
+    });
+  });
+
+  // 5. Magic Items
   WP.forEach(function(w) {
     var d = w[currentLang] || w['ru'];
-    PI.push({ t: d.name, sub: t("weap") + (w.en && currentLang !== 'en' ? " · " + w.en.name : ""), tab: "weap", id: w.id, tag: t("weap"), col: w.color || "#a5f1ff" });
+    PI.push({
+      t: d.name,
+      sub: t("weap") + (w.en && currentLang !== 'en' ? " · " + w.en.name : ""),
+      d: (d.desc || "").replace(/<[^>]+>/g, " "),
+      tab: "weap",
+      id: w.id,
+      tag: t("weap") || "Предмет",
+      col: w.color || "#a5f1ff"
+    });
   });
+
+  // 6. Professions
   PR.forEach(function(p) {
     var d = p[currentLang] || p['ru'];
-    PI.push({ t: d.title, sub: t("prof") + " · " + d.group, tab: "prof", id: p.id, tag: t("prof"), col: "#3567c9" });
+    PI.push({
+      t: d.title,
+      sub: t("prof") + " · " + d.group,
+      d: (d.desc || "").replace(/<[^>]+>/g, " "),
+      tab: "prof",
+      id: p.id,
+      tag: t("prof") || "Профессия",
+      col: "#3567c9"
+    });
   });
+
+  // 7. Bestiary
   BS.forEach(function(b) {
     var locName = b.n;
     if (currentLang === 'uk') locName = b.uk_n || b.n;
     else if (currentLang === 'en') locName = b.en;
-    PI.push({ t: locName, sub: t("bestiary") + " · " + b.en + " · CR " + b.cr, tab: "bestiary", id: b.en, tag: t("bestiary"), col: b.c || "#c41e3a" });
+    var bestDesc = ((b.traits || []).concat(b.actions || []).concat(b.bonus || []).concat(b.reactions || [])).map(function(a){ return a.n + " " + a.d; }).join(" ");
+    PI.push({
+      t: locName,
+      sub: t("bestiary") + " · " + b.en + " · CR " + b.cr,
+      d: (b.meta || "") + " " + bestDesc.replace(/<[^>]+>/g, " "),
+      tab: "bestiary",
+      id: b.en,
+      tag: t("bestiary") || "Бестиарий",
+      col: b.c || "#c41e3a"
+    });
   });
 }
 
 function openPal() {
-  $("pal").hidden = false;
-  $("pq").value = "";
-  renderPaletteResults("");
-  setTimeout(function() { $("pq").focus(); }, 50);
+  var pal = $("pal");
+  if (!pal) return;
+  pal.hidden = false;
+  document.body.classList.add("lock");
+  var pq = $("pq");
+  if (pq) {
+    pq.value = "";
+    renderPaletteResults("");
+    setTimeout(function() { pq.focus(); }, 40);
+  }
 }
+
 function closePal() {
-  $("pal").hidden = true;
+  var pal = $("pal");
+  if (pal) pal.hidden = true;
+  document.body.classList.remove("lock");
 }
 
 function renderPaletteResults(q) {
   q = (q || "").toLowerCase().trim();
   var out = $("pr");
+  if (!out) return;
   if (!q) {
     out.innerHTML = '<div class="pal-empty">' + esc(t("search_empty")) + '</div>';
     return;
   }
-  var matches = PI.filter(function(x) {
-    return x.t.toLowerCase().indexOf(q) >= 0 || x.sub.toLowerCase().indexOf(q) >= 0;
-  }).slice(0, 30);
 
-  if (!matches.length) {
+  var alt = switchLayout(q);
+  var q1 = alt[0], q2 = alt[1];
+  var qStem = stemRu(q);
+  var q1Stem = stemRu(q1);
+  var q2Stem = stemRu(q2);
+
+  var matches = [];
+  var seen = {};
+
+  function addMatch(x, rank) {
+    var k = x.tab + ":" + x.id + ":" + x.t;
+    if (!seen[k]) {
+      seen[k] = true;
+      matches.push({ item: x, rank: rank });
+    }
+  }
+
+  function matchesStr(target) {
+    return target.indexOf(q) >= 0 || target.indexOf(q1) >= 0 || target.indexOf(q2) >= 0
+        || (qStem.length >= 4 && target.indexOf(qStem) >= 0)
+        || (q1Stem.length >= 4 && target.indexOf(q1Stem) >= 0)
+        || (q2Stem.length >= 4 && target.indexOf(q2Stem) >= 0);
+  }
+
+  // 1. Title matches (Rank 1)
+  PI.forEach(function(x) {
+    var tLow = x.t.toLowerCase();
+    if (matchesStr(tLow)) addMatch(x, 1);
+  });
+
+  // 2. Subtitle matches (Rank 2)
+  PI.forEach(function(x) {
+    var sLow = x.sub.toLowerCase();
+    if (matchesStr(sLow)) addMatch(x, 2);
+  });
+
+  // 3. Description / keywords matches (Rank 3, for queries >= 3 chars)
+  if (q.length >= 3) {
+    PI.forEach(function(x) {
+      if (x.d) {
+        var dLow = x.d.toLowerCase();
+        if (matchesStr(dLow)) addMatch(x, 3);
+      }
+    });
+  }
+
+  var topMatches = matches.slice(0, 40).map(function(m) { return m.item; });
+
+  if (!topMatches.length) {
     out.innerHTML = '<div class="pal-empty">' + esc(t("search_not_found")) + '</div>';
     return;
   }
 
-  out.innerHTML = matches.map(function(m, i) {
+  out.innerHTML = topMatches.map(function(m, i) {
     return '<button type="button" class="pal-item' + (i === 0 ? ' selected' : '') + '" data-tab="' + m.tab + '" data-id="' + escA(m.id) + '">'
       + '<span class="pal-tag" style="background:' + (m.col || 'var(--link-color)') + '">' + esc(m.tag) + '</span>'
       + '<span class="pal-t">' + esc(m.t) + '</span>'
@@ -2554,8 +2755,14 @@ function renderPaletteResults(q) {
 }
 
 function handlePaletteKey(e) {
-  if (e.key === "Escape" || e.keyCode === 27) { e.preventDefault(); closePal(); return; }
+  if (e.key === "Escape" || e.keyCode === 27) {
+    e.preventDefault();
+    e.stopPropagation();
+    closePal();
+    return;
+  }
   var out = $("pr");
+  if (!out) return;
   var items = out.querySelectorAll(".pal-item");
   if (!items.length) return;
   var selIdx = -1;
@@ -2685,17 +2892,32 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  $("srchBtn").onclick = openPal;
-  if ($("railSrchBtn")) $("railSrchBtn").onclick = openPal;
-  $("pal").querySelector(".pal-backdrop").onclick = closePal;
+  // Search button and palette bindings
+  var srchBtn = $("srchBtn");
+  if (srchBtn) srchBtn.onclick = openPal;
+  var railSrchBtn = $("railSrchBtn");
+  if (railSrchBtn) railSrchBtn.onclick = openPal;
 
-  $("pq").oninput = function() {
-    renderPaletteResults(this.value);
-  };
-  $("pq").onkeydown = handlePaletteKey;
+  var pal = $("pal");
+  if (pal) {
+    pal.onclick = function(e) {
+      if (e.target === this) closePal();
+    };
+  }
 
-    window.addEventListener("keydown", function(e) {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+  var palCloseBtn = $("palCloseBtn");
+  if (palCloseBtn) palCloseBtn.onclick = closePal;
+
+  var pq = $("pq");
+  if (pq) {
+    pq.oninput = function() {
+      renderPaletteResults(this.value);
+    };
+    pq.onkeydown = handlePaletteKey;
+  }
+
+  window.addEventListener("keydown", function(e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K" || e.key === "л" || e.key === "Л")) {
       e.preventDefault();
       openPal();
     }
@@ -2707,12 +2929,14 @@ document.addEventListener("DOMContentLoaded", function() {
       var pal = $("pal");
       if (pal && !pal.hidden && pal.style.display !== "none") {
         e.preventDefault();
+        e.stopPropagation();
         closePal();
         return;
       }
       var spMod = $("sp-modal");
-      if (spMod && !spMod.hidden) {
+      if (spMod && !spMod.hidden && spMod.style.display !== "none") {
         e.preventDefault();
+        e.stopPropagation();
         spMod.hidden = true;
         document.body.classList.remove("lock");
         return;
@@ -2720,6 +2944,7 @@ document.addEventListener("DOMContentLoaded", function() {
       var openMds = document.querySelectorAll(".md.open");
       if (openMds.length) {
         e.preventDefault();
+        e.stopPropagation();
         [].forEach.call(openMds, function(m) { m.classList.remove("open"); });
         document.body.classList.remove("lock");
         return;
@@ -2727,7 +2952,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }, true);
 
-var initialHash = location.hash ? location.hash.slice(1) : "home";
+  var initialHash = location.hash ? location.hash.slice(1) : "home";
   var hParts = initialHash.split("/");
   goTo(hParts[0] || "home", hParts[1] ? decodeURIComponent(hParts[1]) : null);
 });
