@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Backup files
+*.bak
+*.tmp
+
+# Scratch & migration dumps
+scratch/
+scratch_*.json
+test_syntax.js
+test_lang_data.py
+audit_all.py
+check_var_names.py
+deep_audit.py
+fix_lang_css.py
+generate_test_images.py
+apply_lang_upgrade.py
+build_lang_module.py
