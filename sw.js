@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wow-55e-v1';
+const CACHE_NAME = 'wow-55e-v2';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -24,13 +24,33 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const fetchPromise = fetch(event.request)
+  const req = event.request;
+  const isHtml = req.mode === 'navigate' || req.url.endsWith('.html') || req.url.endsWith('/');
+
+  if (isHtml) {
+    // Network-first for HTML so updates always appear immediately
+    event.respondWith(
+      fetch(req)
         .then((response) => {
           if (response && response.status === 200 && response.type === 'basic') {
             const copy = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // Cache-first with background refresh for images and static assets
+  event.respondWith(
+    caches.match(req).then((cached) => {
+      const fetchPromise = fetch(req)
+        .then((response) => {
+          if (response && response.status === 200 && response.type === 'basic') {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
           }
           return response;
         })
