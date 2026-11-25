@@ -1,0 +1,17 @@
+{
+  "name": "World of Warcraft 5.5e • D&D 2024 Reference Guide",
+  "short_name": "WoW 5.5e",
+  "description": "Complete reference guide for D&D 5.5e / 2024 campaigns in Azeroth",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#131a20",
+  "theme_color": "#131a20",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
