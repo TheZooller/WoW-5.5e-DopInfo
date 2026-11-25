@@ -11955,8 +11955,8 @@ function setLanguage(lang) {
 
   updateUIStrings();
   markAllTabsDirty();
-  buildTabIfNeeded(currentTab);
   buildIndex();
+  buildTabIfNeeded(currentTab);
 
   if (savedMdState && V[currentTab] && V[currentTab].restoreState) {
     V[currentTab].restoreState(savedMdState);
