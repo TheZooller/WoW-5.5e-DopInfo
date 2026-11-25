@@ -3143,6 +3143,18 @@ html, body {
   outline: 2px solid var(--border-focus) !important;
   outline-offset: 2px !important;
 }
+.pal-in input:focus-visible,
+.filter-input:focus-visible,
+.sp-search-input:focus-visible {
+  outline: none !important;
+}
+.pal-in:focus-within {
+  border-bottom-color: var(--border-focus);
+}
+.filter-input:focus,
+.sp-search-input:focus {
+  border-color: var(--border-focus);
+}
 .visual-card:focus-visible,
 .sp-card:focus-visible,
 .rail-tab:focus-visible,
@@ -3200,44 +3212,6 @@ button.sp-card {
   cursor: pointer;
   padding: 0 10px;
 }
-.enc-open-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 36px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--gold-border);
-  background: rgba(212, 175, 55, 0.12);
-  color: var(--gold-accent);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.enc-open-btn:hover { background: rgba(212, 175, 55, 0.22); }
-.enc-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: var(--gold-accent);
-  color: #131a20;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.rail-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 940;
-  backdrop-filter: blur(2px);
-}
-
 /* Sort select & Spells search */
 .md-tools-row2 {
   display: flex;
@@ -3248,32 +3222,35 @@ button.sp-card {
   margin-top: 8px;
 }
 .sort-select {
-  background: var(--bg-table-list);
+  background: var(--bg-secondary);
   color: var(--text-color);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 6px 10px;
+  padding: 6px 12px;
   font-size: 13px;
+  font-weight: 600;
   min-height: 36px;
   cursor: pointer;
 }
+.sort-select:hover { border-color: var(--border-hover); }
 .sp-search-wrap {
-  margin-bottom: 12px;
+  padding: 0 24px 14px;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
 }
 .sp-search-input {
   flex: 1 1 260px;
-  padding: 10px 14px;
-  border-radius: 10px;
+  padding: 8px 14px;
+  border-radius: 8px;
   border: 1px solid var(--border);
-  background: var(--bg-table-list);
+  background: var(--bg-secondary);
   color: var(--text-color-title);
   font-size: 14px;
-  min-height: 44px;
+  min-height: 38px;
 }
+.pal-res { min-height: 0; }
 
 /* Empty state */
 .empty-state {
@@ -3540,7 +3517,19 @@ button.sp-card {
 .recent-card-title { font-size: 14px; font-weight: 700; }
 .recent-card-sub { font-size: 12px; color: var(--text-color-muted); }
 
-/* Encounter & Compare Modal */
+.rail-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 940;
+  backdrop-filter: blur(2px);
+}
+@media (max-width: 768px) {
+  .sp-search-wrap { padding: 0 14px 12px; }
+  .sp-filters { padding: 0 14px 14px; }
+  .sp-count-bar { padding: 0 14px 10px; }
+  .sp-grid { padding: 0 14px 24px; }
+}
 .enc-modal {
   position: fixed;
   inset: 0;
@@ -3751,48 +3740,9 @@ button.sp-card {
   .map-sidebar-legend.mobile-collapsed {
     display: none !important;
   }
-  .dice-toast {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    max-width: none;
-  }
 }
 @media (max-width: 440px) {
   #srchTxt { display: none !important; }
-}
-
-/* ==========================================================================
-   PRINT / PDF STYLES
-   ========================================================================== */
-@media print {
-  body { background: #fff !important; color: #000 !important; overflow: visible !important; }
-  .sidebar-rail, .top-bar, .md-sidebar, .md-bar, .detail-actions-bar, .prev-next-bar, .toc, .sp-filters, .sp-count-bar, .sp-grid, .dice-toast, .pal-backdrop, .map-lightbox-modal, .enc-modal {
-    display: none !important;
-  }
-  .main-viewport, .content-scroll, .md, .md-main-area, .md-view, .md-body {
-    position: static !important;
-    overflow: visible !important;
-    height: auto !important;
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    background: #fff !important;
-    color: #000 !important;
-  }
-  .sb-card, .boss-box, .callout, .dhead {
-    break-inside: avoid;
-    border-color: #ccc !important;
-    background: #fff !important;
-    color: #000 !important;
-    box-shadow: none !important;
-  }
-  .sp-view-modal:not([hidden]) {
-    position: static !important;
-    display: block !important;
-  }
-  .sp-view-backdrop, .sp-view-close { display: none !important; }
-  .sp-view-card { box-shadow: none !important; border: none !important; max-height: none !important; }
 }
 
 </style>
@@ -3832,7 +3782,6 @@ button.sp-card {
         <span id="srchTxt">Поиск по справочнику</span>
         <kbd>Ctrl + K</kbd>
       </button>
-      <button type="button" class="enc-open-btn" id="encOpenBtn" title="Конструктор энкаунтеров">⚔️ <span id="encCountBadge" class="enc-badge" hidden>0</span></button>
       <div class="lang-switcher" title="Language / Язык" role="group" aria-label="Language Switcher">
         <button type="button" class="lang-pill" data-lang="ru">RU</button>
         <button type="button" class="lang-pill" data-lang="en">EN</button>
@@ -9617,48 +9566,12 @@ function addRecent(tabName, key, title, sub) {
   if (arr.length > 10) arr.length = 10;
   try { localStorage.setItem("wow_recent", JSON.stringify(arr)); } catch(e) {}
 }
-
-// Dice Roller
-function rollDiceExpr(expr) {
-  var s = String(expr).replace(/к/gi, "d").replace(/−/g, "-").trim();
-  var mMod = s.match(/^([+-]\d+)$/);
-  if (mMod) {
-    var d20 = Math.floor(Math.random() * 20) + 1;
-    var mod = parseInt(mMod[1], 10);
-    return { expr: "1d20" + (mod >= 0 ? "+" + mod : mod), rolls: [d20], mod: mod, total: d20 + mod };
+function resolveRecentItem(r) {
+  if (typeof PI !== "undefined" && PI.length) {
+    var found = PI.find(function(x) { return x.tab === r.tab && String(x.id) === String(r.id); });
+    if (found) return { tab: r.tab, id: r.id, title: found.t, sub: found.sub || "" };
   }
-  var m = s.match(/^(\d+)d(\d+)(?:\s*([+-])\s*(\d+))?$/i);
-  if (!m) return null;
-  var cnt = Math.min(50, Math.max(1, parseInt(m[1], 10)));
-  var sides = Math.min(1000, Math.max(2, parseInt(m[2], 10)));
-  var mod = m[3] ? (m[3] === "-" ? -parseInt(m[4], 10) : parseInt(m[4], 10)) : 0;
-  var rolls = [], sum = 0;
-  for (var i = 0; i < cnt; i++) {
-    var r = Math.floor(Math.random() * sides) + 1;
-    rolls.push(r);
-    sum += r;
-  }
-  return { expr: s, rolls: rolls, mod: mod, total: sum + mod };
-}
-function showDiceResult(expr) {
-  var res = rollDiceExpr(expr);
-  if (!res) return;
-  var toast = $("diceToast");
-  if (!toast) return;
-  $("diceToastLabel").textContent = "🎲 " + t("dice_rolled") + " (" + res.expr + ")";
-  $("diceToastTotal").textContent = res.total;
-  var det = "[" + res.rolls.join(", ") + "]";
-  if (res.mod) det += (res.mod > 0 ? " + " + res.mod : " - " + Math.abs(res.mod));
-  $("diceToastDetail").textContent = det;
-  toast.hidden = false;
-}
-function linkifyDice(textHtml) {
-  // Replace dice expressions and +N attack/save modifiers outside HTML tags
-  return textHtml.replace(/(<[^>]+>)|(\b\d+[dк]\d+(?:\s*[+-]\s*\d+)?\b)|([+-]\d+(?=\s*(?:к попаданию|to hit|к проверке|к спасброску|, reach|, range|, досягаемость|, дистанция)))/gi, function(full, tag, dice, mod) {
-    if (tag) return tag;
-    var expr = dice || mod;
-    return '<button type="button" class="dice-roll-btn" data-roll="' + escA(expr) + '">' + esc(expr) + '</button>';
-  });
+  return r;
 }
 function linkifySpellsInText(escapedHtml) {
   if (typeof SPELLS === "undefined") return escapedHtml;
@@ -9732,128 +9645,6 @@ function formatMonsterStatblockText(b) {
     (sec[1] || []).forEach(function(it) { lines.push("- " + it[0] + ": " + it[1]); });
   });
   return lines.join("\n");
-}
-
-// Encounter Builder & Compare State
-function getEncounterList() { try { return JSON.parse(localStorage.getItem("wow_encounter") || "[]"); } catch(e) { return []; } }
-function saveEncounterList(arr) {
-  try { localStorage.setItem("wow_encounter", JSON.stringify(arr)); } catch(e) {}
-  updateEncBadge();
-}
-function getCompareList() { try { return JSON.parse(localStorage.getItem("wow_compare") || "[]"); } catch(e) { return []; } }
-function saveCompareList(arr) { try { localStorage.setItem("wow_compare", JSON.stringify(arr)); } catch(e) {} }
-function updateEncBadge() {
-  var badge = $("encCountBadge");
-  if (!badge) return;
-  var total = getEncounterList().reduce(function(s, x) { return s + (x.count || 1); }, 0);
-  badge.textContent = total;
-  badge.hidden = total === 0;
-}
-function addToEncounter(enName) {
-  var arr = getEncounterList();
-  var ex = arr.find(function(x) { return x.id === enName; });
-  if (ex) ex.count = (ex.count || 1) + 1;
-  else arr.push({ id: enName, count: 1 });
-  saveEncounterList(arr);
-}
-function addToCompare(enName) {
-  var arr = getCompareList();
-  if (arr.indexOf(enName) < 0) {
-    if (arr.length >= 3) arr.shift();
-    arr.push(enName);
-    saveCompareList(arr);
-  }
-  openEncModal("compare");
-}
-var _activeEncTab = "builder";
-function openEncModal(tabMode) {
-  _activeEncTab = tabMode || _activeEncTab || "builder";
-  switchEncTab(_activeEncTab);
-  openDialog($("encModal"));
-}
-function closeEncModal() { closeDialog($("encModal")); }
-function switchEncTab(mode) {
-  _activeEncTab = mode;
-  document.querySelectorAll(".enc-tab-btn").forEach(function(b) {
-    b.classList.toggle("active", b.getAttribute("data-enctab") === mode);
-  });
-  if ($("encTabBuilderLbl")) $("encTabBuilderLbl").textContent = t("encounter_builder");
-  if ($("encTabCompareLbl")) $("encTabCompareLbl").textContent = t("compare_creatures");
-  renderEncBody();
-}
-var XP_THRESHOLDS = {
-  1:[25,50,75,100],2:[50,100,150,200],3:[75,150,225,400],4:[125,250,375,500],
-  5:[250,500,750,1100],6:[300,600,900,1400],7:[350,750,1100,1700],8:[450,900,1400,2100],
-  9:[550,1100,1600,2400],10:[600,1200,1900,2800],11:[800,1600,2400,3600],12:[1000,2000,3000,4500],
-  13:[1100,2200,3400,5100],14:[1250,2500,3800,5700],15:[1400,2800,4300,6400],16:[1600,3200,4800,7200],
-  17:[2000,3900,5900,8800],18:[2100,4200,6300,9500],19:[2400,4900,7300,10900],20:[2800,5700,8500,12700]
-};
-function renderEncBody() {
-  var body = $("encBody");
-  if (!body) return;
-  var isEn = (currentLang === "en");
-  if (_activeEncTab === "builder") {
-    var partySize = parseInt(localStorage.getItem("wow_party_n") || "4", 10);
-    var partyLvl = parseInt(localStorage.getItem("wow_party_lvl") || "5", 10);
-    var list = getEncounterList();
-    var rawXp = 0, totalMobs = 0;
-    var rowsHtml = list.map(function(entry, idx) {
-      var b = BS.find(function(x) { return x.en === entry.id; });
-      if (!b) return "";
-      var xp = parseInt(String(b.xp || "0").replace(/[^0-9]/g, ""), 10) || 0;
-      rawXp += xp * entry.count;
-      totalMobs += entry.count;
-      return '<div class="enc-row">'
-        + '<div><strong>' + esc(isEn ? b.en : b.n) + '</strong> <span style="color:var(--text-color-muted);font-size:12px">CR ' + esc(b.cr) + ' · ' + xp + ' XP</span></div>'
-        + '<div style="display:flex;align-items:center;gap:6px">'
-          + '<button type="button" class="action-chip-btn" onclick="modEncCount(' + idx + ',-1)">−</button>'
-          + '<strong>' + entry.count + '</strong>'
-          + '<button type="button" class="action-chip-btn" onclick="modEncCount(' + idx + ',1)">+</button>'
-          + '<button type="button" class="action-chip-btn" onclick="modEncCount(' + idx + ',-999)">✕</button>'
-        + '</div></div>';
-    }).join("");
-    var mult = totalMobs <= 1 ? 1 : (totalMobs === 2 ? 1.5 : (totalMobs <= 6 ? 2 : (totalMobs <= 10 ? 2.5 : (totalMobs <= 14 ? 3 : 4))));
-    var adjXp = Math.round(rawXp * mult);
-    var th = XP_THRESHOLDS[Math.min(20, Math.max(1, partyLvl))] || XP_THRESHOLDS[5];
-    var eEasy = th[0] * partySize, eMed = th[1] * partySize, eHard = th[2] * partySize, eDead = th[3] * partySize;
-    var diff = adjXp === 0 ? "—" : (adjXp >= eDead ? t("deadly") : (adjXp >= eHard ? t("hard") : (adjXp >= eMed ? t("medium") : t("easy"))));
-    body.innerHTML = '<div class="enc-party-bar">'
-      + '<label>' + esc(t("party_size")) + ': <input type="number" min="1" max="10" value="' + partySize + '" onchange="localStorage.setItem(\'wow_party_n\',this.value);renderEncBody();"></label>'
-      + '<label>' + esc(t("party_level")) + ': <input type="number" min="1" max="20" value="' + partyLvl + '" onchange="localStorage.setItem(\'wow_party_lvl\',this.value);renderEncBody();"></label>'
-      + '<button type="button" class="action-chip-btn" onclick="saveEncounterList([]);renderEncBody();">' + esc(t("clear_all")) + '</button>'
-      + '</div>'
-      + '<div class="enc-summary-grid">'
-        + '<div class="enc-stat-box"><div class="enc-stat-lbl">' + esc(t("total_xp")) + '</div><div class="enc-stat-val">' + rawXp + '</div></div>'
-        + '<div class="enc-stat-box"><div class="enc-stat-lbl">' + esc(t("adjusted_xp")) + ' (×' + mult + ')</div><div class="enc-stat-val">' + adjXp + '</div></div>'
-        + '<div class="enc-stat-box"><div class="enc-stat-lbl">' + esc(t("difficulty")) + '</div><div class="enc-stat-val" style="color:var(--gold-accent)">' + esc(diff) + '</div></div>'
-      + '</div>'
-      + (rowsHtml || '<p style="color:var(--text-color-muted)">' + (isEn ? 'Add creatures from Bestiary using "+ Encounter".' : 'Добавьте существ из Бестиария кнопкой «+ В энкаунтер».') + '</p>');
-  } else {
-    var cmp = getCompareList().map(function(id) { return BS.find(function(x) { return x.en === id; }); }).filter(Boolean);
-    if (!cmp.length) {
-      body.innerHTML = '<p style="color:var(--text-color-muted)">' + (isEn ? 'Select up to 3 creatures from Bestiary using "+ Compare".' : 'Выберите до 3 существ в Бестиарии кнопкой «+ Сравнить».') + '</p>';
-      return;
-    }
-    body.innerHTML = '<div style="margin-bottom:10px"><button type="button" class="action-chip-btn" onclick="saveCompareList([]);renderEncBody();">' + esc(t("clear_all")) + '</button></div>'
-      + '<div style="overflow-x:auto"><table class="cmp-table"><thead><tr><th></th>'
-      + cmp.map(function(b) { return '<th>' + esc(isEn ? b.en : b.n) + '</th>'; }).join("")
-      + '</tr></thead><tbody>'
-      + '<tr><th>CR / XP</th>' + cmp.map(function(b) { return '<td>CR ' + esc(b.cr) + ' (' + esc(b.xp) + ' XP)</td>'; }).join("") + '</tr>'
-      + '<tr><th>AC</th>' + cmp.map(function(b) { return '<td>' + esc((isEn && b.ac_en) ? b.ac_en : b.ac) + '</td>'; }).join("") + '</tr>'
-      + '<tr><th>HP</th>' + cmp.map(function(b) { return '<td>' + esc((isEn && b.hp_en) ? b.hp_en : b.hp) + '</td>'; }).join("") + '</tr>'
-      + '<tr><th>Speed</th>' + cmp.map(function(b) { return '<td>' + esc(b.sp) + '</td>'; }).join("") + '</tr>'
-      + '<tr><th>STR/DEX/CON</th>' + cmp.map(function(b) { return '<td>' + (b.ab ? b.ab.slice(0,3).map(function(x){return x[0]+' ('+x[1]+')';}).join(' / ') : '') + '</td>'; }).join("") + '</tr>'
-      + '<tr><th>INT/WIS/CHA</th>' + cmp.map(function(b) { return '<td>' + (b.ab ? b.ab.slice(3,6).map(function(x){return x[0]+' ('+x[1]+')';}).join(' / ') : '') + '</td>'; }).join("") + '</tr>'
-      + '</tbody></table></div>';
-  }
-}
-function modEncCount(idx, delta) {
-  var arr = getEncounterList();
-  if (!arr[idx]) return;
-  arr[idx].count = (arr[idx].count || 1) + delta;
-  if (arr[idx].count <= 0) arr.splice(idx, 1);
-  saveEncounterList(arr);
-  renderEncBody();
 }
 
 // Lazy tab rendering registry
@@ -10080,7 +9871,7 @@ function MD(cfg) {
     if (n === 0) {
       var emp = document.createElement("div");
       emp.className = "empty-state";
-      emp.innerHTML = '<div class="empty-state-ico">🔍</div><p>' + esc(t("search_not_found")) + '</p>'
+      emp.innerHTML = '<p>' + esc(t("search_not_found")) + '</p>'
         + '<button type="button" class="hero-btn secondary md-reset-btn">' + esc(t("reset_filters")) + '</button>';
       emp.querySelector(".md-reset-btn").onclick = resetAllFilters;
       grid.appendChild(emp);
@@ -10167,9 +9958,8 @@ function MD(cfg) {
     addRecent(cfg.hash, keyVal, c.title, c.sub || c.meta || "");
 
     var rawHtml = cfg.detail(it, idx);
-    // Cross-link spells in Bestiary & linkify dice everywhere
+    // Cross-link spells in Bestiary
     if (cfg.hash === "bestiary") rawHtml = linkifySpellsInText(rawHtml);
-    rawHtml = linkifyDice(rawHtml);
     if (cfg.hash === "classes" || cfg.hash === "races" || cfg.hash === "dungeons" || cfg.hash === "world") {
       rawHtml = injectTOC(rawHtml);
     }
@@ -10189,9 +9979,8 @@ function MD(cfg) {
       + '</div>'
       + '<div class="detail-btns-group">'
         + '<button type="button" class="action-chip-btn detail-fav-btn' + (starred ? ' active-fav' : '') + '">' + (starred ? '★ ' : '☆ ') + esc(starred ? t("fav_remove") : t("fav_add")) + '</button>'
-        + '<button type="button" class="action-chip-btn detail-copy-link-btn">🔗 ' + esc(t("copy_link")) + '</button>'
-        + (cfg.hash === "bestiary" ? '<button type="button" class="action-chip-btn detail-copy-sb-btn">📋 ' + esc(t("copy_statblock")) + '</button><button type="button" class="action-chip-btn detail-enc-btn">' + esc(t("add_to_encounter")) + '</button><button type="button" class="action-chip-btn detail-cmp-btn">' + esc(t("add_to_compare")) + '</button>' : '')
-        + '<button type="button" class="action-chip-btn" onclick="window.print()">🖨️ ' + esc(t("print_page")) + '</button>'
+        + '<button type="button" class="action-chip-btn detail-copy-link-btn">' + esc(t("copy_link")) + '</button>'
+        + (cfg.hash === "bestiary" ? '<button type="button" class="action-chip-btn detail-copy-sb-btn">' + esc(t("copy_statblock")) + '</button>' : '')
       + '</div>'
     + '</div>';
 
@@ -10215,10 +10004,6 @@ function MD(cfg) {
     if (clBtn) clBtn.onclick = function() { copyTextFeedback(clBtn, location.href); };
     var sbBtn = body.querySelector(".detail-copy-sb-btn");
     if (sbBtn) sbBtn.onclick = function() { copyTextFeedback(sbBtn, formatMonsterStatblockText(it)); };
-    var eBtn = body.querySelector(".detail-enc-btn");
-    if (eBtn) eBtn.onclick = function() { addToEncounter(it.en); copyTextFeedback(eBtn, "✓"); };
-    var cBtn = body.querySelector(".detail-cmp-btn");
-    if (cBtn) cBtn.onclick = function() { addToCompare(it.en); };
     var pBtn = body.querySelector(".md-prev-btn");
     if (pBtn && prevIdx >= 0) pBtn.onclick = function() { select(prevIdx, true); };
     var nBtn = body.querySelector(".md-next-btn");
@@ -10352,7 +10137,6 @@ function updateUIStrings() {
   if (srchTxt) srchTxt.textContent = t("search_btn");
   if ($("srchBtn")) $("srchBtn").setAttribute("aria-label", t("search_btn"));
   if ($("mobileMenuBtn")) $("mobileMenuBtn").setAttribute("aria-label", t("menu_open"));
-  if ($("encOpenBtn")) $("encOpenBtn").setAttribute("title", t("encounter_builder"));
 
   $("cls-title").textContent = t("classes");
   $("cls-sub").textContent = t("classes_sub");
@@ -10706,11 +10490,10 @@ function buildSpells() {
     var actHtml = '<div class="detail-actions-bar" style="margin-top:8px">'
       + '<div class="detail-btns-group">'
         + '<button type="button" class="action-chip-btn sp-modal-fav-btn' + (starred ? ' active-fav' : '') + '">' + (starred ? '★ ' : '☆ ') + esc(starred ? t("fav_remove") : t("fav_add")) + '</button>'
-        + '<button type="button" class="action-chip-btn sp-modal-copy-btn">🔗 ' + esc(t("copy_link")) + '</button>'
-        + '<button type="button" class="action-chip-btn" onclick="window.print()">🖨️ ' + esc(t("print_page")) + '</button>'
+        + '<button type="button" class="action-chip-btn sp-modal-copy-btn">' + esc(t("copy_link")) + '</button>'
       + '</div></div>';
     var spBody = modal.querySelector(".sp-view-body");
-    spBody.innerHTML = actHtml + linkifyDice(spellDetail(sp));
+    spBody.innerHTML = actHtml + spellDetail(sp);
     spBody.querySelector(".sp-modal-fav-btn").onclick = function() {
       var now = toggleFav("spells", sp.en.name, d.name);
       this.classList.toggle("active-fav", now);
@@ -10760,7 +10543,7 @@ function buildSpells() {
     cnt.textContent = matched.length ? t("search_count").replace("{n}", matched.length).replace("{total}", SPELLS.length) : t("search_not_found");
 
     if (!matched.length) {
-      grid.innerHTML = '<div class="empty-state"><div class="empty-state-ico">✨</div><p>' + esc(t("search_not_found")) + '</p>'
+      grid.innerHTML = '<div class="empty-state"><p>' + esc(t("search_not_found")) + '</p>'
         + '<button type="button" class="hero-btn secondary" id="sp-reset-btn">' + esc(t("reset_filters")) + '</button></div>';
       $("sp-reset-btn").onclick = resetSpellFilters;
       return;
@@ -12417,7 +12200,8 @@ function buildHome() {
       var rec = getRecent();
       if (!rec.length) return '';
       return '<section class="home-sect"><h2>' + esc(t("recently_viewed")) + '</h2><div class="recent-grid">'
-        + rec.slice(0, 6).map(function(r) {
+        + rec.slice(0, 6).map(function(rawR) {
+            var r = resolveRecentItem(rawR);
             return '<button type="button" class="recent-card" onclick="goTo(\'' + escA(r.tab) + '\', \'' + escA(r.id) + '\')">'
               + '<span class="recent-card-tag">' + esc(t(r.tab) || r.tab) + '</span>'
               + '<span class="recent-card-title">' + esc(r.title) + '</span>'
@@ -12699,7 +12483,8 @@ function renderPaletteResults(q) {
     var rec = getRecent();
     if (rec.length) {
       out.innerHTML = '<div class="pal-group-title">' + esc(t("pal_recent")) + '</div>'
-        + rec.map(function(r, i) {
+        + rec.map(function(rawR, i) {
+            var r = resolveRecentItem(rawR);
             return '<button type="button" class="pal-item' + (i === 0 ? ' selected' : '') + '" data-tab="' + escA(r.tab) + '" data-id="' + escA(r.id) + '">'
               + '<span class="pal-tag" style="background:var(--link-color)">' + esc(t(r.tab) || r.tab) + '</span>'
               + '<span class="pal-t">' + esc(r.title) + '</span>'
@@ -12864,7 +12649,6 @@ document.addEventListener("DOMContentLoaded", function() {
   updateUIStrings();
   markAllTabsDirty();
   buildIndex();
-  updateEncBadge();
 
   document.querySelectorAll(".lang-pill").forEach(function(btn) {
     var l = (btn.dataset && btn.dataset.lang) || btn.getAttribute("data-lang");
@@ -12883,7 +12667,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
   if ($("mobileMenuBtn")) $("mobileMenuBtn").onclick = toggleMobileDrawer;
   if ($("railBackdrop")) $("railBackdrop").onclick = closeMobileDrawer;
-  if ($("encOpenBtn")) $("encOpenBtn").onclick = function() { openEncModal(); };
 
   $("tabs").onclick = function(e) {
     var b = e.target.closest(".rail-tab");
@@ -12892,16 +12675,8 @@ document.addEventListener("DOMContentLoaded", function() {
     tab(b.getAttribute("data-t"), true);
   };
 
-  // Delegated click handler: links & dice rolls
+  // Delegated click handler: links
   document.addEventListener("click", function(e) {
-    var diceBtn = e.target.closest(".dice-roll-btn");
-    if (diceBtn) {
-      e.preventDefault();
-      e.stopPropagation();
-      showDiceResult(diceBtn.getAttribute("data-roll"));
-      return;
-    }
-
     var a = e.target.closest("a");
     if (!a) return;
     var h = a.getAttribute("href");
@@ -12949,7 +12724,6 @@ document.addEventListener("DOMContentLoaded", function() {
       var rail = document.querySelector(".sidebar-rail.drawer-open");
       if (rail) { e.preventDefault(); closeMobileDrawer(); return; }
       if ($("pal") && !$("pal").hidden) { e.preventDefault(); e.stopPropagation(); closePal(); return; }
-      if ($("encModal") && !$("encModal").hidden) { e.preventDefault(); e.stopPropagation(); closeEncModal(); return; }
       if ($("mapModal") && !$("mapModal").hidden) { e.preventDefault(); e.stopPropagation(); closeMapModal(); return; }
       var spMod = $("sp-modal");
       if (spMod && !spMod.hidden) {
@@ -13214,31 +12988,5 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
   </div>
 </div>
-
-<!-- ENCOUNTER BUILDER & COMPARE MODAL -->
-<div class="enc-modal" id="encModal" role="dialog" aria-modal="true" aria-labelledby="encModalTitle" hidden>
-  <div class="enc-backdrop" onclick="closeEncModal()"></div>
-  <div class="enc-box">
-    <div class="enc-header">
-      <div class="enc-tabs" id="encModalTitle">
-        <button type="button" class="enc-tab-btn active" data-enctab="builder" onclick="switchEncTab('builder')">⚔️ <span id="encTabBuilderLbl">Конструктор</span></button>
-        <button type="button" class="enc-tab-btn" data-enctab="compare" onclick="switchEncTab('compare')">⚖️ <span id="encTabCompareLbl">Сравнение</span></button>
-      </div>
-      <button type="button" class="map-tool-close" onclick="closeEncModal()" aria-label="Закрыть">✕</button>
-    </div>
-    <div class="enc-body" id="encBody"></div>
-  </div>
-</div>
-
-<!-- FLOATING DICE ROLL TOAST -->
-<div class="dice-toast" id="diceToast" aria-live="polite" hidden>
-  <div class="dice-toast-head">
-    <span id="diceToastLabel">🎲 Бросок костей</span>
-    <button type="button" class="dice-toast-close" onclick="$('diceToast').hidden=true" aria-label="Закрыть">✕</button>
-  </div>
-  <div class="dice-toast-total" id="diceToastTotal">20</div>
-  <div class="dice-toast-detail" id="diceToastDetail"></div>
-</div>
-
 </body>
 </html>
