@@ -3764,20 +3764,85 @@ button.sp-card {
     width: 100% !important;
     min-height: 44px !important;
   }
-  .top-bar { padding: 8px 10px; gap: 6px; }
+  .top-bar { padding: 8px 10px; gap: 6px; height: 52px; }
   .brand-t { white-space: nowrap; font-size: 14px; }
   .top-search-btn {
-    min-height: 44px;
+    min-height: 38px;
     padding: 6px 10px;
     white-space: nowrap;
   }
   .top-search-btn kbd { display: none; }
   #srchTxt { display: inline !important; font-size: 13px; }
   .brand-sep, .brand-crumb { display: none; }
-  .lang-pill, .view-toggle-btn, .chips button, .f-chips button, .md-back, .map-tool-btn, .map-tool-close {
-    min-height: 44px !important;
-    min-width: 44px !important;
+  /* Keep language switcher pills neatly inside their container */
+  .lang-switcher { height: 34px; padding: 2px; flex-shrink: 0; }
+  .lang-pill { min-height: 28px !important; min-width: 34px !important; padding: 4px 8px !important; }
+  .view-toggle-btn, .chips button, .f-chips button, .md-back, .map-tool-btn, .map-tool-close {
+    min-height: 38px !important;
   }
+  /* Compact mobile page header & full-page scrolling for MD sections */
+  .ph { padding: 12px 14px 8px !important; }
+  .ph h1 { font-size: 20px !important; }
+  .ph p { font-size: 12px !important; line-height: 1.4; }
+  .md {
+    height: auto !important;
+    overflow: visible !important;
+    flex: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+  }
+  .md-sidebar {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border);
+  }
+  .md.layout-list .md-sidebar {
+    max-height: 260px !important;
+    overflow-y: auto !important;
+  }
+  .md.layout-grid.detail-active .md-sidebar {
+    display: none !important;
+  }
+  .md-tools {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+  }
+  .md-tools-top {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+  .view-toggle-btn span { display: none; }
+  .view-toggle-btn { padding: 6px 10px !important; min-width: 38px !important; }
+  .md-main-area, .md-grid-container, .md-view, .md-body {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .md-view { padding: 12px !important; }
+  .items-wrap.mode-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    padding: 12px !important;
+  }
+  .visual-card .card-art-box { height: 160px !important; }
+  .detail-art-hero, .detail-art-hero.compact { min-height: 170px !important; height: auto !important; }
+  .detail-hero-overlay { padding: 20px 14px 14px !important; }
+  .detail-hero-title { font-size: 22px !important; }
+  .hero-card, .chromie-banner, .tiles-grid, .steps-grid {
+    margin-left: 12px !important;
+    margin-right: 12px !important;
+  }
+  .hero-card { padding: 20px 16px !important; }
+  .home-sect h2 { margin-left: 12px !important; margin-right: 12px !important; }
+  .recent-grid { margin: 0 12px !important; grid-template-columns: 1fr !important; }
+  .detail-actions-bar { padding: 8px 10px; }
+  .prev-next-bar { flex-direction: column; }
+  .prev-next-btn { max-width: 100%; width: 100%; justify-content: center; }
   .map-lightbox-box {
     width: 100vw !important;
     height: 100vh !important;
