@@ -9943,9 +9943,9 @@ function raceDetail(r) {
   }
 
   if (d.spells && d.spells.length) {
-    h += '<h3>' + esc(t("species_spells_title")) + '</h3><div class="chips-grid">' + d.spells.map(function(x) {
-      return '<a class="spell-chip" href="#spells" data-sp="' + escA(x[0]) + '"><span class="spell-chip-dot"></span><span>' + esc(x[0]) + ' (' + esc(x[1]) + ')</span></a>';
-    }).join("") + '</div>';
+    h += '<h3>' + esc(t("species_spells_title")) + '</h3>' + d.spells.map(function(x) {
+      return '<div class="spec-card"><div class="spec-h"><span class="spec-title">' + esc(x[0]) + '</span></div><p>' + esc(x[1]) + '</p></div>';
+    }).join("");
   }
 
   return h;
