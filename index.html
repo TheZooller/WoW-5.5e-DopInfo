@@ -3193,6 +3193,14 @@ button.sp-card {
   flex-direction: column;
 }
 
+/* Fix .detail-art-hero clipping & .sp-card-h mobile overflow */
+.detail-art-hero { min-height: 120px; height: auto !important; }
+.detail-art-hero.compact { min-height: 112px; height: auto !important; }
+.detail-hero-img { position: absolute; inset: 0; }
+.detail-hero-overlay { position: relative !important; z-index: 2; padding: 24px 22px 16px !important; }
+.sp-card-h { flex-wrap: wrap; gap: 6px; }
+.sp-card-badges { flex-wrap: wrap; }
+
 /* Typography & vertical rhythm inside detail pages */
 .content-render h2 { margin: 24px 0 10px; }
 .content-render h3 { margin: 22px 0 10px; font-size: 18px; color: var(--text-color-title); }
@@ -3590,7 +3598,7 @@ button.sp-card {
   .sp-search-wrap { padding: 0 14px 12px; }
   .sp-filters { padding: 0 14px 14px; }
   .sp-count-bar { padding: 0 14px 10px; }
-  .sp-grid { padding: 0 14px 24px; }
+  .sp-grid { padding: 0 14px 24px; grid-template-columns: 1fr !important; }
 }
 .enc-modal {
   position: fixed;
@@ -9648,23 +9656,43 @@ function classDetail(k) {
     var tblHeaders = currentLang === 'en'
       ? ["Level", "Feature", "Description"]
       : ["Уровень", "Умение", "Описание"];
+    h += '<h3>' + esc(t("subclass_features")) + '</h3>';
 
-    h += '<h3>' + esc(t("subclass_features")) + '</h3>'
-      + '<div class="tb-wrap"><table class="tb">'
-      + '<thead><tr>'
-        + '<th style="width:75px; text-align:center;">' + esc(tblHeaders[0]) + '</th>'
-        + '<th style="width:230px;">' + esc(tblHeaders[1]) + '</th>'
-        + '<th>' + esc(tblHeaders[2]) + '</th>'
-      + '</tr></thead>'
-      + '<tbody>'
-      + featsList.map(function(e) {
-          return '<tr>'
-            + '<td class="k" style="text-align:center; vertical-align:top;"><span class="lvl-badge">' + e[0] + ' ' + esc(t("lvl_suffix")) + '</span></td>'
-            + '<td style="vertical-align:top;"><b>' + esc(e[1]) + '</b></td>'
-            + '<td style="vertical-align:top;">' + fmt(e[2]) + '</td>'
-          + '</tr>';
-        }).join("")
-      + '</tbody></table></div>';
+    var specGroups = {}, specOrder = [], hasSpecTags = false;
+    var genLabel = currentLang === 'en' ? 'Base / Shared Features' : 'Общие умения';
+    featsList.forEach(function(e) {
+      var m = String(e[1]).match(/\[([^\]]+)\]\s*$/);
+      var gName = m ? m[1].trim() : genLabel;
+      if (m) hasSpecTags = true;
+      if (!specGroups[gName]) { specGroups[gName] = []; specOrder.push(gName); }
+      specGroups[gName].push([e[0], m ? String(e[1]).replace(/\s*\[[^\]]+\]\s*$/, '') : e[1], e[2]]);
+    });
+
+    var renderFeTable = function(rows) {
+      return '<div class="tb-wrap"><table class="tb">'
+        + '<thead><tr>'
+          + '<th style="width:75px; text-align:center;">' + esc(tblHeaders[0]) + '</th>'
+          + '<th style="width:230px;">' + esc(tblHeaders[1]) + '</th>'
+          + '<th>' + esc(tblHeaders[2]) + '</th>'
+        + '</tr></thead>'
+        + '<tbody>'
+        + rows.map(function(e) {
+            return '<tr>'
+              + '<td class="k" style="text-align:center; vertical-align:top;"><span class="lvl-badge">' + e[0] + ' ' + esc(t("lvl_suffix")) + '</span></td>'
+              + '<td style="vertical-align:top;"><b>' + esc(e[1]) + '</b></td>'
+              + '<td style="vertical-align:top;">' + fmt(e[2]) + '</td>'
+            + '</tr>';
+          }).join("")
+        + '</tbody></table></div>';
+    };
+
+    if (hasSpecTags && specOrder.length > 1) {
+      specOrder.forEach(function(gName) {
+        h += '<h4>' + esc(gName) + '</h4>' + renderFeTable(specGroups[gName]);
+      });
+    } else {
+      h += renderFeTable(featsList);
+    }
   }
 
   if (dat.spells && dat.spells.length) {
